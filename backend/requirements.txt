@@ -1,5 +1,10 @@
+# CPU-only versions to save disk space (no CUDA/GPU support needed)
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 numpy
-tensorflow
+tensorflow-cpu
+torch
+torchvision
 ultralytics
 opencv-python-headless
 Pillow
