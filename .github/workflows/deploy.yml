@@ -23,30 +23,22 @@ jobs:
 
       - name: Copy files to Azure VM
         run: |
+          SSH_USER="${{ secrets.AZURE_VM_USER }}"
+          SSH_HOST="${{ secrets.AZURE_VM_HOST }}"
+          APP_DIR="/home/${SSH_USER}/app"
+          
           # Copy backend files
-          rsync -avz --progress -e "ssh -i ~/.ssh/deploy_key" \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            --exclude='__pycache__' \
-            --exclude='.env' \
-            --exclude='venv' \
-            ./backend/ ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }}:/home/${{ secrets.AZURE_VM_USER }}/app/backend/
+          rsync -avz --progress -e "ssh -i ~/.ssh/deploy_key" --exclude='.git' --exclude='node_modules' --exclude='__pycache__' --exclude='.env' --exclude='venv' ./backend/ ${SSH_USER}@${SSH_HOST}:${APP_DIR}/backend/
           
           # Copy frontend files
-          rsync -avz --progress -e "ssh -i ~/.ssh/deploy_key" \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            --exclude='dist' \
-            ./frontend/ ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }}:/home/${{ secrets.AZURE_VM_USER }}/app/frontend/
+          rsync -avz --progress -e "ssh -i ~/.ssh/deploy_key" --exclude='.git' --exclude='node_modules' --exclude='dist' ./frontend/ ${SSH_USER}@${SSH_HOST}:${APP_DIR}/frontend/
           
           # Copy docker-compose and nginx config
-          scp -i ~/.ssh/deploy_key ./docker-compose.yml ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }}:/home/${{ secrets.AZURE_VM_USER }}/app/
-          scp -i ~/.ssh/deploy_key -r ./nginx ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }}:/home/${{ secrets.AZURE_VM_USER }}/app/
+          scp -i ~/.ssh/deploy_key ./docker-compose.yml ${SSH_USER}@${SSH_HOST}:${APP_DIR}/
+          scp -i ~/.ssh/deploy_key -r ./nginx ${SSH_USER}@${SSH_HOST}:${APP_DIR}/
 
       - name: Deploy on Azure VM
         uses: appleboy/ssh-action@v1.0.3
-        env:
-          API_URL: ${{ secrets.API_URL }}
         with:
           host: ${{ secrets.AZURE_VM_HOST }}
           username: ${{ secrets.AZURE_VM_USER }}
@@ -60,7 +52,7 @@ jobs:
             cd /home/${{ secrets.AZURE_VM_USER }}/app
             
             # Create .env file for frontend build
-            echo "VITE_API_URL=${API_URL}" > frontend/.env
+            echo "VITE_API_URL=${{ secrets.API_URL }}" > frontend/.env
             
             # Stop existing containers
             echo "🛑 Stopping existing containers..."

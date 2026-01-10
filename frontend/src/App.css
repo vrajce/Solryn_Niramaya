@@ -1,0 +1,332 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-header {
+  padding: var(--spacing-lg);
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--bg-surface-alt);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-main {
+  flex: 1;
+  /* padding: var(--spacing-xl); Keep padding for dashboard, removed for Landing via overrides */
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Allow Landing Page to control its own max-width/padding */
+.app-main:has(.landing-page) {
+  max-width: 100%;
+  padding: 0;
+}
+
+.dashboard-initial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2xl);
+  margin-top: var(--spacing-xl);
+  animation: fadeIn var(--transition-normal) forwards;
+}
+
+.welcome-banner {
+  text-align: center;
+  max-width: 600px;
+}
+
+.welcome-banner h2 {
+  font-size: 2.5rem;
+  color: var(--color-secondary);
+  /* Dark Green match */
+  margin-bottom: var(--spacing-sm);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background: none;
+  /* Remove gradient */
+  -webkit-background-clip: unset;
+  background-clip: unset;
+}
+
+.welcome-banner p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.analysis-status {
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  animation: fadeIn var(--transition-normal) forwards;
+}
+
+.analysis-status p {
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-bottom: var(--spacing-sm);
+}
+
+.progress-bar {
+  height: 6px;
+  background-color: var(--bg-surface-alt);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--color-primary);
+  width: 0%;
+  animation: progress 2.5s ease-in-out forwards;
+}
+
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+to {
+  opacity: 1;
+  transform: translateY(0);
+}
+}
+
+/* --- Global Design Tokens (Promoted from Landing Page) --- */
+
+/* Buttons */
+.btn-global-primary {
+  background-color: var(--text-main);
+  /* Deep Slate/Black like Landing */
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-global-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  background-color: black;
+}
+
+.btn-global-secondary {
+  background-color: var(--bg-surface-alt);
+  color: var(--text-main);
+  border: none;
+  padding: 14px 28px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-global-secondary:hover {
+  background-color: #e2e8f0;
+}
+
+/* Cards */
+.card-global {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--bg-surface-alt);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  /* Subtler start state */
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.card-global:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Inputs */
+.input-global {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--bg-surface-alt);
+  padding: 12px 20px;
+  border-radius: var(--radius-full);
+  color: var(--text-main);
+  font-size: var(--font-size-base);
+  outline: none;
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.input-global:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* --- Symptoms Panel --- */
+.symptoms-panel {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--bg-surface-alt);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  width: 100%;
+  max-width: 900px;
+  box-shadow: var(--shadow-sm);
+}
+
+.symptoms-panel h3 {
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: var(--font-size-lg);
+  color: var(--text-main);
+}
+
+.symptoms-hint {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Two-column layout for bone/lung symptoms */
+.symptoms-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+}
+
+@media (max-width: 768px) {
+  .symptoms-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.symptoms-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.symptoms-category {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  margin: 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid;
+}
+
+.symptoms-category.bone {
+  color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.symptoms-category.lung {
+  color: #8b5cf6;
+  border-color: #8b5cf6;
+}
+
+.symptoms-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.symptom-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background-color: var(--bg-surface-alt);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 2px solid transparent;
+}
+
+.symptom-checkbox:hover {
+  background-color: #e2e8f0;
+}
+
+.symptom-checkbox.checked {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-color: var(--color-success);
+}
+
+.symptom-checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-success);
+}
+
+.symptom-label {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--text-main);
+}
+
+.symptom-weight {
+  font-size: var(--font-size-xs);
+  color: var(--color-success);
+  font-weight: 600;
+  background-color: rgba(34, 197, 94, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* --- Error Message --- */
+.error-message {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  max-width: 600px;
+  animation: fadeIn var(--transition-normal) forwards;
+}
+
+.error-message p {
+  color: var(--color-danger);
+  margin: 0;
+  font-weight: 500;
+}
+
+.error-message button {
+  background: none;
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.error-message button:hover {
+  background-color: var(--color-danger);
+  color: white;
+}

@@ -1,0 +1,75 @@
+.header {
+    background-color: transparent;
+    border-bottom: none;
+    padding: var(--spacing-lg) 0;
+    /* Match Landing Nav padding */
+    margin-bottom: var(--spacing-xl);
+    position: relative;
+    /* Not sticky anymore, matches Landing */
+    z-index: 100;
+}
+
+.header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 1.5rem;
+    /* Match Landing Logo size */
+    cursor: pointer;
+}
+
+.header-nav {
+    display: flex;
+    gap: var(--spacing-xl);
+    /* Match Landing Links gap */
+}
+
+.nav-link {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+    /* Match Landing Links size */
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-normal);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    color: var(--text-main);
+}
+
+.nav-link.active {
+    color: var(--text-main);
+    background-color: transparent;
+    /* No background for active state in strict minimal mode, or use light pill */
+    font-weight: 600;
+}
+
+/* Optional: Add a subtle indicator for active state if needed, but Landing is very text-based */
+.nav-link.active::after {
+    /* content: ''; */
+    /* display: block; */
+    /* width: 4px; */
+    /* height: 4px; */
+    /* background: black; */
+    /* border-radius: 50%; */
+    /* margin-left: 4px; */
+}

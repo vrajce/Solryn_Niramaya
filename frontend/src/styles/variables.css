@@ -1,0 +1,65 @@
+:root {
+  /* Brand Colors - "AyaRX" Inspired Sage & Black Theme */
+  --color-primary: #18181b;
+  /* Deep Black for primary actions */
+  --color-primary-dark: #000000;
+
+  --color-secondary: #064e3b;
+  /* Deep Green Text */
+
+  --color-accent: #dcfce7;
+  /* Light Sage Green for highlights/secondary buttons */
+  --color-accent-dark: #bbf7d0;
+
+  /* Functional Colors */
+  --color-success: #15803d;
+  --color-warning: #a16207;
+  --color-danger: #b91c1c;
+  --color-info: #18181b;
+
+  /* Backgrounds & Surfaces - Organic, Warm, Medical */
+  --bg-body: #f4f5f0;
+  /* Warm Light Gray/Green Tint (Reference BG) */
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #e2e8f0;
+  /* Neutral gray for borders/secondary */
+
+  /* Text Colors */
+  --text-main: #18181b;
+  --text-muted: #52525b;
+  --text-light: #ffffff;
+
+  /* Typography */
+  --font-family-base: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2.75rem;
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 4rem;
+
+  /* Effects */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  --shadow-glow: 0 0 20px rgba(0, 0, 0, 0.1);
+
+  /* Squircle Radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2.5rem;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}

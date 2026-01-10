@@ -1,0 +1,135 @@
+.upload-area {
+    background-color: white;
+    /* Clean white card */
+    border: 1px solid var(--bg-surface-alt);
+    border-radius: 2rem;
+    /* Squircle */
+    padding: 4rem 2rem;
+    text-align: center;
+    transition: all var(--transition-normal);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    min-height: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+    /* Soft shadow */
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.upload-area:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
+    border-color: var(--color-accent);
+}
+
+.upload-area.drag-active {
+    border-color: var(--color-secondary);
+    background-color: var(--color-accent);
+}
+
+.upload-input {
+    display: none;
+}
+
+.upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-lg);
+    z-index: 10;
+    width: 100%;
+}
+
+.upload-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background-color: var(--bg-body);
+    /* Sage tint */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-main);
+    transition: transform var(--transition-normal);
+}
+
+.upload-area:hover .upload-icon-wrapper {
+    transform: scale(1.05);
+    background-color: var(--color-accent);
+}
+
+.upload-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.upload-subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 450px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.upload-divider {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin: var(--spacing-sm) 0;
+    opacity: 0.5;
+}
+
+.upload-button {
+    background-color: var(--text-main);
+    /* Black */
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all var(--transition-normal);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.upload-button:hover {
+    background-color: black;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.upload-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: var(--spacing-md);
+    opacity: 0.6;
+}
+
+/* Analyzing State */
+.upload-area.analyzing .upload-icon-wrapper {
+    animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    background-color: var(--color-accent);
+}
+
+@keyframes ping {
+
+    75%,
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
