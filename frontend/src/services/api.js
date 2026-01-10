@@ -1,5 +1,6 @@
 // API Service for Dayflow Multi-Specialist CDSS Backend
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Use /api prefix to proxy through nginx (avoids port 8000 firewall issues)
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 /**
  * Check API health status
