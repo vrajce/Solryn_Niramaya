@@ -58,9 +58,9 @@ jobs:
             echo "🛑 Stopping existing containers..."
             docker-compose down --remove-orphans || true
             
-            # Build and start containers (frontend builds inside Docker)
+            # Build and start containers (with layer caching for faster rebuilds)
             echo "🐳 Building and starting containers..."
-            docker-compose build --no-cache
+            docker-compose build
             docker-compose up -d
             
             # Wait for services to start
