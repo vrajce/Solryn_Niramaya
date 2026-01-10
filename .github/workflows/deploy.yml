@@ -25,30 +25,32 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
 
       - name: Build Frontend
+        working-directory: frontend
         run: |
-          cd frontend
-          npm ci
+          npm ci --prefer-offline
           VITE_API_URL=/api npm run build
 
       - name: Copy files to Azure VM
         run: |
-          SSH_USER=$(echo "${{ secrets.AZURE_VM_USER }}" | tr -d '[:space:]')
-          SSH_HOST=$(echo "${{ secrets.AZURE_VM_HOST }}" | tr -d '[:space:]')
+          SSH_USER="${{ secrets.AZURE_VM_USER }}"
+          SSH_HOST="${{ secrets.AZURE_VM_HOST }}"
           APP_DIR="/home/${SSH_USER}/app"
           
-          # Copy backend files
-          rsync -avz --progress -e "ssh -i ~/.ssh/deploy_key" --exclude='.git' --exclude='node_modules' --exclude='__pycache__' --exclude='.env' --exclude='venv' ./backend/ ${SSH_USER}@${SSH_HOST}:${APP_DIR}/backend/
+          # Copy backend files (exclude unnecessary files)
+          rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key" \
+            --exclude='.git' --exclude='node_modules' --exclude='__pycache__' \
+            --exclude='.env' --exclude='venv' --exclude='*.pyc' \
+            ./backend/ ${SSH_USER}@${SSH_HOST}:${APP_DIR}/backend/
           
           # Copy frontend built files
-          rsync -avz --progress -e "ssh -i ~/.ssh/deploy_key" ./frontend/dist/ ${SSH_USER}@${SSH_HOST}:${APP_DIR}/frontend-dist/
+          rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key" \
+            ./frontend/dist/ ${SSH_USER}@${SSH_HOST}:${APP_DIR}/frontend-dist/
           
           # Copy docker-compose and nginx config
           scp -i ~/.ssh/deploy_key ./docker-compose.yml ${SSH_USER}@${SSH_HOST}:${APP_DIR}/
-          scp -i ~/.ssh/deploy_key -r ./nginx ${SSH_USER}@${SSH_HOST}:${APP_DIR}/
+          rsync -avz -e "ssh -i ~/.ssh/deploy_key" ./nginx/ ${SSH_USER}@${SSH_HOST}:${APP_DIR}/nginx/
 
       - name: Deploy on Azure VM
         uses: appleboy/ssh-action@v1.0.3
@@ -60,36 +62,32 @@ jobs:
           command_timeout: 30m
           script: |
             set -e
-            
-            echo "🚀 Starting deployment..."
             cd /home/${{ secrets.AZURE_VM_USER }}/app
             
-            # Create .env file for frontend build (used in Dockerfile)
-            echo "VITE_API_URL=/api" > frontend/.env
-            
-            # Stop existing containers
             echo "🛑 Stopping existing containers..."
-            docker-compose down --remove-orphans || true
+            docker-compose down --remove-orphans 2>/dev/null || true
             
-            # Build and start containers (with layer caching for faster rebuilds)
-            echo "🐳 Building and starting containers..."
+            echo "🐳 Building containers (using cache)..."
             docker-compose build
+            
+            echo "🚀 Starting services..."
             docker-compose up -d
             
-            # Wait for services to start
-            echo "⏳ Waiting for services to be healthy..."
-            sleep 45
+            echo "⏳ Waiting for services..."
+            sleep 30
             
-            # Verify backend is running
             echo "✅ Verifying deployment..."
-            curl -f http://localhost:8000/health || echo "Backend health check pending..."
+            curl -sf http://localhost:8000/health || echo "Backend starting..."
             
-            # Cleanup old images
-            echo "🧹 Cleaning up old images..."
-            docker image prune -f
+            echo "🧹 Aggressive cleanup to save disk space..."
+            docker image prune -af --filter "until=24h"
+            docker builder prune -af --filter "until=24h"
+            docker volume prune -f
+            
+            echo "📊 Disk usage:"
+            df -h / | tail -1
             
             echo "✅ Deployment complete!"
-            echo "🌐 Your app is available at: http://${{ secrets.AZURE_VM_HOST }}"
             docker-compose ps
 
       - name: Notify deployment status
