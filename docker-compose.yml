@@ -12,6 +12,13 @@ services:
       - "8000"
     environment:
       - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount model files from host (keeps them out of git/Docker image)
+      - ./backend/bone_model.pt:/app/bone_model.pt:ro
+      - ./backend/bone_model_backup_real.pt:/app/bone_model_backup_real.pt:ro
+      - ./backend/lung_model.pt:/app/lung_model.pt:ro
+      - ./backend/lung-tb-model.pt:/app/lung-tb-model.pt:ro
+      - ./backend/router_model.h5:/app/router_model.h5:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s

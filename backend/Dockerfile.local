@@ -26,12 +26,11 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-# Copy model files (rarely change, cached separately)
-COPY *.pt ./
-COPY *.h5 ./
-
-# Copy application code last (changes most frequently)
+# Copy application code
 COPY api.py .
+
+# Model files (.pt, .h5) are mounted from host via docker-compose volumes
+# This avoids storing large models in git and Docker images
 
 # Expose port
 EXPOSE 8000
