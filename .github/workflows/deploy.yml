@@ -44,19 +44,72 @@ jobs:
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           port: 22
-          envs: API_URL
+          command_timeout: 30m
           script: |
             set -e
             
             echo "🚀 Starting deployment..."
             cd /home/${{ secrets.AZURE_VM_USER }}/app
             
-            # Create .env file for frontend build
-            echo "VITE_API_URL=${{ secrets.API_URL }}" > frontend/.env
+            # Create directories for certbot
+            mkdir -p certbot/conf certbot/www frontend-dist
+            
+            # Build frontend locally and copy to volume
+            echo "🔨 Building frontend..."
+            cd frontend
+            npm ci
+            echo "VITE_API_URL=${{ secrets.API_URL }}" > .env
+            npm run build
+            cp -r dist/* ../frontend-dist/
+            cd ..
             
             # Stop existing containers
             echo "🛑 Stopping existing containers..."
             docker-compose down --remove-orphans || true
+            
+            # Check if SSL certificates exist
+            DOMAIN="${{ secrets.AZURE_DOMAIN }}"
+            if [ ! -f "certbot/conf/live/$DOMAIN/fullchain.pem" ]; then
+              echo "📜 Obtaining SSL certificate for $DOMAIN..."
+              
+              # Create temporary nginx config for initial certificate
+              cat > nginx/nginx-init.conf << 'NGINXEOF'
+            events { worker_connections 1024; }
+            http {
+              server {
+                listen 80;
+                server_name _;
+                location /.well-known/acme-challenge/ { root /var/www/certbot; }
+                location / { return 200 'Nirmaya AI - Setting up SSL...'; add_header Content-Type text/plain; }
+              }
+            }
+            NGINXEOF
+              
+              # Start nginx with temporary config
+              docker run -d --name temp-nginx \
+                -p 80:80 \
+                -v $(pwd)/nginx/nginx-init.conf:/etc/nginx/nginx.conf:ro \
+                -v $(pwd)/certbot/www:/var/www/certbot \
+                nginx:alpine
+              
+              sleep 5
+              
+              # Obtain certificate
+              docker run --rm \
+                -v $(pwd)/certbot/conf:/etc/letsencrypt \
+                -v $(pwd)/certbot/www:/var/www/certbot \
+                certbot/certbot certonly --webroot \
+                --webroot-path=/var/www/certbot \
+                --email ${{ secrets.SSL_EMAIL }} \
+                --agree-tos --no-eff-email \
+                -d $DOMAIN
+              
+              # Stop temporary nginx
+              docker stop temp-nginx && docker rm temp-nginx
+              
+              # Update nginx config with correct domain
+              sed -i "s/nirmaya-ai.eastus.cloudapp.azure.com/$DOMAIN/g" nginx/nginx.conf
+            fi
             
             # Build and start containers
             echo "🐳 Building and starting containers..."
@@ -65,9 +118,9 @@ jobs:
             
             # Wait for services to start
             echo "⏳ Waiting for services to be healthy..."
-            sleep 45
+            sleep 30
             
-            # Verify backend is running
+            # Verify deployment
             echo "✅ Verifying deployment..."
             curl -f http://localhost:8000/health || echo "Backend health check pending..."
             
@@ -76,6 +129,7 @@ jobs:
             docker image prune -f
             
             echo "✅ Deployment complete!"
+            echo "🌐 Your app is available at: https://$DOMAIN"
             docker-compose ps
 
       - name: Notify deployment status
