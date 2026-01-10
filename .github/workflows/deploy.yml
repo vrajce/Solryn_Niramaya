@@ -23,8 +23,8 @@ jobs:
 
       - name: Copy files to Azure VM
         run: |
-          SSH_USER="${{ secrets.AZURE_VM_USER }}"
-          SSH_HOST="${{ secrets.AZURE_VM_HOST }}"
+          SSH_USER=$(echo "${{ secrets.AZURE_VM_USER }}" | tr -d '[:space:]')
+          SSH_HOST=$(echo "${{ secrets.AZURE_VM_HOST }}" | tr -d '[:space:]')
           APP_DIR="/home/${SSH_USER}/app"
           
           # Copy backend files
