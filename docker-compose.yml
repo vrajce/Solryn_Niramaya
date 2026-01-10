@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # FastAPI Backend (CPU mode)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.local
+    container_name: nirmaya-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    networks:
+      - nirmaya-network
+
+  # React Frontend with Nginx
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
+    container_name: nirmaya-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - nirmaya-network
+
+networks:
+  nirmaya-network:
+    driver: bridge

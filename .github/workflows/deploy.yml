@@ -1,0 +1,97 @@
+name: Deploy Nirmaya AI to Azure VM
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AZURE_VM_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.AZURE_VM_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copy files to Azure VM
+        run: |
+          # Copy backend files
+          rsync -avz --progress -e "ssh -i ~/.ssh/deploy_key" \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='__pycache__' \
+            --exclude='.env' \
+            --exclude='venv' \
+            ./backend/ ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }}:/home/${{ secrets.AZURE_VM_USER }}/app/backend/
+          
+          # Copy frontend files
+          rsync -avz --progress -e "ssh -i ~/.ssh/deploy_key" \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='dist' \
+            ./frontend/ ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }}:/home/${{ secrets.AZURE_VM_USER }}/app/frontend/
+          
+          # Copy docker-compose and nginx config
+          scp -i ~/.ssh/deploy_key ./docker-compose.yml ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }}:/home/${{ secrets.AZURE_VM_USER }}/app/
+          scp -i ~/.ssh/deploy_key -r ./nginx ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }}:/home/${{ secrets.AZURE_VM_USER }}/app/
+
+      - name: Deploy on Azure VM
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          API_URL: ${{ secrets.API_URL }}
+        with:
+          host: ${{ secrets.AZURE_VM_HOST }}
+          username: ${{ secrets.AZURE_VM_USER }}
+          key: ${{ secrets.AZURE_VM_SSH_KEY }}
+          port: 22
+          envs: API_URL
+          script: |
+            set -e
+            
+            echo "🚀 Starting deployment..."
+            cd /home/${{ secrets.AZURE_VM_USER }}/app
+            
+            # Create .env file for frontend build
+            echo "VITE_API_URL=${API_URL}" > frontend/.env
+            
+            # Stop existing containers
+            echo "🛑 Stopping existing containers..."
+            docker-compose down --remove-orphans || true
+            
+            # Build and start containers
+            echo "🐳 Building and starting containers..."
+            docker-compose build --no-cache
+            docker-compose up -d
+            
+            # Wait for services to start
+            echo "⏳ Waiting for services to be healthy..."
+            sleep 45
+            
+            # Verify backend is running
+            echo "✅ Verifying deployment..."
+            curl -f http://localhost:8000/health || echo "Backend health check pending..."
+            
+            # Cleanup old images
+            echo "🧹 Cleaning up old images..."
+            docker image prune -f
+            
+            echo "✅ Deployment complete!"
+            docker-compose ps
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployment successful!"
+          else
+            echo "❌ Deployment failed!"
+            exit 1
+          fi

@@ -9,7 +9,7 @@ env/
 .venv/
 .env/
 
-# Model files (large binary files)
+# Model files (large binary files) - upload separately to VM
 *.pt
 *.h5
 *.keras
@@ -48,6 +48,20 @@ dist/
 
 # Logs and databases
 *.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# SSL certificates
+nginx/ssl/*.pem
+nginx/ssl/*.key
+nginx/ssl/*.crt
+
+# Test folders
+Test*/
+test*/
 *.sqlite3
 *.db
 
