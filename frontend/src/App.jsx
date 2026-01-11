@@ -2,7 +2,6 @@ import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import Header from './components/Header'
 import Dashboard from './components/Dashboard'
 import HistoryView from './components/HistoryView'
-import SettingsView from './components/SettingsView'
 import LandingPage from './components/LandingPage'
 import './App.css'
 
@@ -31,7 +30,6 @@ function App() {
           <Route path="/" element={<LandingPage onGetStarted={() => navigate('/dashboard')} onNavigate={handleNavigate} />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/history" element={<HistoryView />} />
-          <Route path="/settings" element={<SettingsView />} />
         </Routes>
       </main>
     </div>

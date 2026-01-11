@@ -7,5 +7,4 @@ opencv-python-headless
 Pillow
 fastapi
 uvicorn[standard]
-python-multipartpip install fastapi uvicorn python-multipart
-uvicorn api:app --reload --port 8000
+python-multipart

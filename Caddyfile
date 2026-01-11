@@ -1,0 +1,25 @@
+:80, :443 {
+    # Serve frontend static files
+    root * /srv
+    file_server
+    
+    # Proxy ALL API requests to backend
+    handle /analyze* {
+        reverse_proxy backend:8000
+    }
+    handle /health* {
+        reverse_proxy backend:8000
+    }
+    handle /symptoms* {
+        reverse_proxy backend:8000
+    }
+    handle /route* {
+        reverse_proxy backend:8000
+    }
+    handle /history* {
+        reverse_proxy backend:8000
+    }
+    
+    # SPA fallback - serve index.html for all other routes
+    try_files {path} /index.html
+}

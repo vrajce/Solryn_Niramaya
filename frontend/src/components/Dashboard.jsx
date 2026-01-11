@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import UploadArea from './UploadArea';
 import ResultsView from './ResultsView';
-import { analyzeXray, base64ToImageUrl } from '../services/api';
+import { analyzeXray, analyzeTB, analyzePneumonia, base64ToImageUrl } from '../services/api';
 
 const Dashboard = () => {
     const location = useLocation();
@@ -12,6 +12,11 @@ const Dashboard = () => {
     const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
     const [analysisResult, setAnalysisResult] = useState(null);
     const [error, setError] = useState(null);
+    
+    // New state for chest condition selection
+    const [showChestModal, setShowChestModal] = useState(false);
+    const [pendingChestImage, setPendingChestImage] = useState(null);
+    const [chestImagePreview, setChestImagePreview] = useState(null);
 
     useEffect(() => {
         if (location.state?.historyItem) {
@@ -44,10 +49,23 @@ const Dashboard = () => {
                 return;
             }
             
+            // Check if this is a chest X-ray requiring selection
+            if (result.scan_type === "Chest" && result.chest_condition === "SELECTION_REQUIRED") {
+                // Show modal for TB/Pneumonia selection
+                setPendingChestImage(uploadedFile);
+                setChestImagePreview(result.annotated_image_base64 
+                    ? base64ToImageUrl(result.annotated_image_base64) 
+                    : URL.createObjectURL(uploadedFile));
+                setShowChestModal(true);
+                setIsAnalyzing(false);
+                return;
+            }
+            
             // Transform API response to match ResultsView expected format
             const transformedResult = {
                 success: result.success,
                 scanType: result.scan_type,
+                chestCondition: result.chest_condition,
                 scanTypeConfidence: result.scan_type_confidence,
                 disease: result.risk_class,
                 detectedCondition: result.detected_condition,
@@ -82,16 +100,142 @@ const Dashboard = () => {
         }
     };
 
+    // Handle chest condition selection (TB or Pneumonia)
+    const handleChestConditionSelect = async (condition) => {
+        setShowChestModal(false);
+        setIsAnalyzing(true);
+        setError(null);
+        
+        try {
+            let result;
+            if (condition === 'TB') {
+                result = await analyzeTB(pendingChestImage, {}, true);
+            } else {
+                result = await analyzePneumonia(pendingChestImage, {}, true);
+            }
+            
+            // Transform API response
+            const transformedResult = {
+                success: result.success,
+                scanType: result.scan_type,
+                chestCondition: result.chest_condition,
+                scanTypeConfidence: result.scan_type_confidence,
+                disease: result.risk_class,
+                detectedCondition: result.detected_condition,
+                confidence: result.final_confidence,
+                aiConfidence: result.ai_confidence,
+                clinicalBoost: result.clinical_boost,
+                severity: result.risk_class,
+                location: result.ai_location,
+                method: result.ai_method,
+                statusMessage: result.status_message,
+                visualAnalysis: result.visual_analysis_text,
+                clinicalContext: result.clinical_context_text,
+                clinicalReasons: result.clinical_reasons,
+                annotatedImageUrl: result.annotated_image_base64 
+                    ? base64ToImageUrl(result.annotated_image_base64) 
+                    : null,
+                findings: result.ai_confidence > 0 ? [{
+                    id: 1,
+                    label: result.detected_condition || condition,
+                    region: result.ai_location,
+                    confidence: result.ai_confidence
+                }] : []
+            };
+            
+            setFile(pendingChestImage);
+            setAnalysisResult(transformedResult);
+            setShowResults(true);
+            setPendingChestImage(null);
+            setChestImagePreview(null);
+        } catch (err) {
+            console.error('Chest analysis error:', err);
+            setError(err.message || `Failed to analyze for ${condition}. Please try again.`);
+            setPendingChestImage(null);
+            setChestImagePreview(null);
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
+    const handleCancelChestSelection = () => {
+        setShowChestModal(false);
+        setPendingChestImage(null);
+        setChestImagePreview(null);
+        setFile(null);
+    };
+
     const handleReset = () => {
         setFile(null);
         setShowResults(false);
         setSelectedHistoryItem(null);
         setAnalysisResult(null);
         setError(null);
+        setShowChestModal(false);
+        setPendingChestImage(null);
+        setChestImagePreview(null);
     };
 
     return (
         <>
+            {/* Chest Condition Selection Modal */}
+            {showChestModal && (
+                <div className="modal-overlay" onClick={handleCancelChestSelection}>
+                    <div className="chest-selection-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>🫁 Chest X-Ray Detected</h2>
+                            <p>Please select the condition to analyze:</p>
+                        </div>
+                        
+                        {chestImagePreview && (
+                            <div className="modal-image-preview">
+                                <img src={chestImagePreview} alt="Chest X-Ray" />
+                            </div>
+                        )}
+                        
+                        <div className="condition-options">
+                            <button 
+                                className="condition-btn tb-btn"
+                                onClick={() => handleChestConditionSelect('TB')}
+                            >
+                                <div className="condition-icon">🦠</div>
+                                <div className="condition-info">
+                                    <h3>Tuberculosis (TB)</h3>
+                                    <p>Analyze for TB indicators using YOLO detection model</p>
+                                    <ul className="condition-symptoms">
+                                        <li>Chronic cough (&gt;2 weeks)</li>
+                                        <li>Blood in sputum</li>
+                                        <li>Night sweats</li>
+                                        <li>Weight loss</li>
+                                    </ul>
+                                </div>
+                            </button>
+                            
+                            <button 
+                                className="condition-btn pneumonia-btn"
+                                onClick={() => handleChestConditionSelect('Pneumonia')}
+                            >
+                                <div className="condition-icon">🔬</div>
+                                <div className="condition-info">
+                                    <h3>Pneumonia</h3>
+                                    <p>Analyze using AI classification + U-Net contour mapping</p>
+                                    <ul className="condition-symptoms">
+                                        <li>High fever</li>
+                                        <li>Productive cough</li>
+                                        <li>Shortness of breath</li>
+                                        <li>Chest pain</li>
+                                    </ul>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <button className="modal-cancel-btn" onClick={handleCancelChestSelection}>
+                            Cancel and Upload Different Image
+                        </button>
+                    </div>
+                </div>
+            )}
+            
             {!showResults ? (
                 <div className="dashboard-initial">
                     <div className="welcome-banner">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { History, Settings, Activity } from 'lucide-react';
+import { History, Activity } from 'lucide-react';
 import './Header.css';
 
 const Header = ({ activeTab, onNavigate }) => {
@@ -10,7 +10,7 @@ const Header = ({ activeTab, onNavigate }) => {
                     <div className="logo-icon">
                         <Activity size={28} strokeWidth={2.5} />
                     </div>
-                    <span className="logo-text">MediScan AI</span>
+                    <span className="logo-text">Niramaya</span>
                 </div>
                 <nav className="header-nav">
                     <button
@@ -19,13 +19,6 @@ const Header = ({ activeTab, onNavigate }) => {
                     >
                         <History size={18} style={{ marginRight: '8px' }} />
                         History
-                    </button>
-                    <button
-                        className={`nav-link ${activeTab === 'settings' ? 'active' : ''}`}
-                        onClick={() => onNavigate('settings')}
-                    >
-                        <Settings size={18} style={{ marginRight: '8px' }} />
-                        Settings
                     </button>
                 </nav>
             </div>

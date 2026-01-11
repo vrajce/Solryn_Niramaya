@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  backend:
+    image: niramaya-backend:latest
+    container_name: niramaya-backend
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    networks:
+      - niramaya-network
+
+  caddy:
+    image: caddy:alpine
+    container_name: niramaya-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./frontend-dist:/srv:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+    networks:
+      - niramaya-network
+
+networks:
+  niramaya-network:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:

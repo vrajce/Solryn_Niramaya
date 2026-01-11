@@ -1,0 +1,30 @@
+:80 {
+    # Proxy API requests to backend FIRST (strip /api prefix)
+    handle_path /api/* {
+        reverse_proxy backend:8000
+    }
+    
+    # Also handle direct API routes (without /api prefix)
+    handle_path /analyze* {
+        reverse_proxy backend:8000
+    }
+    handle_path /health* {
+        reverse_proxy backend:8000
+    }
+    handle_path /symptoms* {
+        reverse_proxy backend:8000
+    }
+    handle_path /route* {
+        reverse_proxy backend:8000
+    }
+    handle_path /history* {
+        reverse_proxy backend:8000
+    }
+    
+    # Serve frontend (fallback)
+    handle {
+        root * /srv
+        try_files {path} /index.html
+        file_server
+    }
+}

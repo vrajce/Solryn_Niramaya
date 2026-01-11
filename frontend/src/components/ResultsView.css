@@ -305,6 +305,18 @@ input:checked+.toggle-slider::after {
     color: #7c3aed;
 }
 
+/* TB-specific badge styling */
+.scan-type-badge.chest.tb {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+/* Pneumonia-specific badge styling */
+.scan-type-badge.chest.pneumonia {
+    background-color: #f5f3ff;
+    color: #7c3aed;
+}
+
 .detected-condition-badge {
     display: inline-block;
     padding: 4px 10px;

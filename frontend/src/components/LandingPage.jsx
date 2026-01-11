@@ -13,10 +13,9 @@ const LandingPage = ({ onGetStarted, onNavigate }) => {
     return (
         <div className="landing-page">
             <nav className="landing-nav">
-                <div className="landing-logo" onClick={() => onNavigate('landing')} style={{ cursor: 'pointer' }}>MedScan AI</div>
+                <div className="landing-logo" onClick={() => onNavigate('landing')} style={{ cursor: 'pointer' }}>Niramaya</div>
                 <div className="landing-links">
                     <a href="#" onClick={(e) => handleNavClick('history', e)}>History</a>
-                    <a href="#" onClick={(e) => handleNavClick('settings', e)}>Settings</a>
                 </div>
                 <div className="landing-nav-actions">
                     <button className="join-btn" onClick={onGetStarted}>Analyze Scan <ArrowRight size={16} /></button>
@@ -35,26 +34,6 @@ const LandingPage = ({ onGetStarted, onNavigate }) => {
                         <button className="btn-black" onClick={onGetStarted}>
                             Analyze Scan Now <ArrowRight size={20} />
                         </button>
-                        <button className="btn-beige">
-                            View Methodology
-                        </button>
-                    </div>
-
-                    <div className="social-proof">
-                        <div className="avatar-stack">
-                            {[1, 2, 3, 4].map((i) => (
-                                <div key={i} className="avatar-circle" />
-                            ))}
-                        </div>
-                        <div className="proof-text">
-                            <strong>10,000+</strong>
-                            <span>scans analyzed</span>
-                        </div>
-                    </div>
-
-                    <div className="partner-bar">
-                        <span>Deploy in your clinic?</span>
-                        <button className="partner-arrow"><ArrowRight size={16} /></button>
                     </div>
                 </div>
 

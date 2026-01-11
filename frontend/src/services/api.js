@@ -1,4 +1,4 @@
-// API Service for Dayflow Multi-Specialist CDSS Backend
+// API Service for Niramaya Multi-Specialist CDSS Backend
 // Use /api prefix to proxy through nginx (avoids port 8000 firewall issues)
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -93,7 +93,82 @@ export const analyzeBone = async (file, symptoms = {}, includeImage = true) => {
 };
 
 /**
- * Direct lung/TB/Pneumonia analysis (bypasses router)
+ * TB-specific analysis for chest X-rays
+ * @param {File} file - The chest X-ray image
+ * @param {Object} symptoms - TB-specific symptoms
+ * @param {boolean} includeImage - Whether to include annotated image
+ * @returns {Promise<Object>} TB analysis results
+ */
+export const analyzeTB = async (file, symptoms = {}, includeImage = true) => {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        // TB-specific symptoms
+        formData.append('cough', symptoms.cough || false);
+        formData.append('blood_sputum', symptoms.blood_sputum || false);
+        formData.append('night_sweats', symptoms.night_sweats || false);
+        formData.append('weight_loss', symptoms.weight_loss || false);
+        formData.append('fever', symptoms.fever || false);
+        formData.append('include_image', includeImage);
+
+        const response = await fetch(`${API_BASE_URL}/analyze/tb`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || `TB analysis failed`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('TB analysis failed:', error);
+        throw error;
+    }
+};
+
+/**
+ * Pneumonia-specific analysis for chest X-rays
+ * Uses classification model + U-Net segmentation for contour mapping
+ * @param {File} file - The chest X-ray image
+ * @param {Object} symptoms - Pneumonia-specific symptoms
+ * @param {boolean} includeImage - Whether to include annotated image
+ * @returns {Promise<Object>} Pneumonia analysis results with contour mapping
+ */
+export const analyzePneumonia = async (file, symptoms = {}, includeImage = true) => {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        // Pneumonia-specific symptoms
+        formData.append('high_fever', symptoms.high_fever || false);
+        formData.append('productive_cough', symptoms.productive_cough || false);
+        formData.append('shortness_breath', symptoms.shortness_breath || false);
+        formData.append('chest_pain', symptoms.chest_pain || false);
+        formData.append('rapid_breathing', symptoms.rapid_breathing || false);
+        formData.append('fever', symptoms.fever || false);
+        formData.append('cough', symptoms.cough || false);
+        formData.append('include_image', includeImage);
+
+        const response = await fetch(`${API_BASE_URL}/analyze/pneumonia`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || `Pneumonia analysis failed`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Pneumonia analysis failed:', error);
+        throw error;
+    }
+};
+
+/**
+ * Direct lung/TB analysis (legacy - prefer analyzeTB or analyzePneumonia)
  */
 export const analyzeLung = async (file, symptoms = {}, includeImage = true) => {
     try {
@@ -195,6 +270,8 @@ export default {
     checkHealth,
     analyzeXray,
     analyzeBone,
+    analyzeTB,
+    analyzePneumonia,
     analyzeLung,
     routeImage,
     calculateSymptoms,

@@ -38,10 +38,11 @@ jobs:
           SSH_HOST="${{ secrets.AZURE_VM_HOST }}"
           APP_DIR="/home/${SSH_USER}/app"
           
-          # Copy backend files (exclude unnecessary files)
+          # Copy backend files (exclude unnecessary files AND preserve model files on VM)
           rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key" \
             --exclude='.git' --exclude='node_modules' --exclude='__pycache__' \
             --exclude='.env' --exclude='venv' --exclude='*.pyc' \
+            --exclude='*.pt' --exclude='*.h5' \
             ./backend/ ${SSH_USER}@${SSH_HOST}:${APP_DIR}/backend/
           
           # Copy frontend built files

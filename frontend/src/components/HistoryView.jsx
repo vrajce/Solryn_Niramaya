@@ -3,7 +3,7 @@ import { Search, Filter, Eye, AlertTriangle, CheckCircle, Clock, Trash2, Refresh
 import { useNavigate } from 'react-router-dom';
 import './HistoryView.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const HistoryView = () => {
     const navigate = useNavigate();

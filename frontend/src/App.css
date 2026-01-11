@@ -330,3 +330,169 @@ to {
   background-color: var(--color-danger);
   color: white;
 }
+
+/* --- Chest Condition Selection Modal --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+  backdrop-filter: blur(4px);
+}
+
+.chest-selection-modal {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  max-width: 700px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.modal-header h2 {
+  font-size: 1.75rem;
+  color: var(--text-main);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.modal-header p {
+  color: var(--text-muted);
+  font-size: var(--font-size-base);
+  margin: 0;
+}
+
+.modal-image-preview {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.modal-image-preview img {
+  max-width: 200px;
+  max-height: 150px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  object-fit: contain;
+  background-color: #000;
+}
+
+.condition-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+@media (max-width: 600px) {
+  .condition-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+.condition-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  background-color: var(--bg-surface-alt);
+}
+
+.condition-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.condition-btn.tb-btn {
+  border-color: #ef4444;
+}
+
+.condition-btn.tb-btn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: #dc2626;
+}
+
+.condition-btn.pneumonia-btn {
+  border-color: #8b5cf6;
+}
+
+.condition-btn.pneumonia-btn:hover {
+  background-color: rgba(139, 92, 246, 0.1);
+  border-color: #7c3aed;
+}
+
+.condition-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.condition-info h3 {
+  font-size: var(--font-size-lg);
+  color: var(--text-main);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.condition-info p {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.condition-symptoms {
+  text-align: left;
+  padding-left: var(--spacing-lg);
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.condition-symptoms li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.modal-cancel-btn {
+  width: 100%;
+  padding: var(--spacing-md);
+  background-color: transparent;
+  border: 1px solid var(--bg-surface-alt);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modal-cancel-btn:hover {
+  background-color: var(--bg-surface-alt);
+  color: var(--text-main);
+}
