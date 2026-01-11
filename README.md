@@ -266,7 +266,3 @@ Built with passion by students from **Dhirubhai Ambani University** 🎓
 <p align="center">
   <strong>🩺 Because early detection saves lives 🩺</strong>
 </p>
-
-<p align="center">
-  Made with ❤️ for the DAU Hackathon 2025
-</p>
