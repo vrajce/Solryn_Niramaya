@@ -72,3 +72,6 @@ test*/
 
 # Ultralytics YOLO
 runs/
+
+# Archive files
+*.tar
