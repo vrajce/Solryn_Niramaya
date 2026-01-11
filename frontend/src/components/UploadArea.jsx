@@ -67,7 +67,7 @@ const UploadArea = ({ onUpload, isAnalyzing }) => {
                     <ScanLine size={36} />
                 </div>
                 <h3 className="upload-title">Upload Medical Scan</h3>
-                <p className="upload-subtitle">Drag and drop your X-ray or CT scan here to detect abnormalities with high precision.</p>
+                <p className="upload-subtitle">Drag and drop your X-ray here to detect abnormalities with high precision.</p>
 
                 <span className="upload-divider">or</span>
 
@@ -78,7 +78,7 @@ const UploadArea = ({ onUpload, isAnalyzing }) => {
                     Browse Files
                 </button>
 
-                <p className="upload-hint">Supported formats: JPG, PNG, DICOM (preview only)</p>
+                <p className="upload-hint">Supported formats: JPG, PNG, JPEG</p>
             </div>
         </div>
     );
