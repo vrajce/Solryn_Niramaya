@@ -59,19 +59,48 @@ nginx/ssl/*.pem
 nginx/ssl/*.key
 nginx/ssl/*.crt
 
-# Test folders
+# Test folders and test data
 Test*/
 test*/
+Test for bone/
+Test for pneumonia/
+Test for tb/
+test for invalid/
+test for model.zip
 *.sqlite3
 *.db
-
-# Test images (uncomment if you don't want to track test data)
-# Test for bone/
-# Test for tb/
-# test for invalid/
 
 # Ultralytics YOLO
 runs/
 
 # Archive files
 *.tar
+*.zip
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Frontend build outputs
+frontend-dist/
+frontend/dist/
+frontend/node_modules/
+
+# Docker
+*.tar.gz
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.cache
+
+# Coverage reports
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+
+# mypy
+.mypy_cache/
