@@ -78,3 +78,91 @@ runs/
 *.tar.gz
 *.zip
 *.rar
+*.7z
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+.yarn/
+package-lock.json
+yarn.lock
+
+# Build outputs
+frontend/dist/
+*.min.js
+*.min.css
+
+# Coverage reports
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# MyPy / Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Caches
+*.cache
+.cache/
+__cache__/
+.parcel-cache/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+tmp/
+temp/
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# Secrets and credentials
+*.pem
+*.key
+secrets/
+.secrets
+credentials.json
+service-account*.json
+
+# Local configuration
+local_settings.py
+*.local.py
+config.local.*
+
+# Profiling
+*.prof
+*.lprof
+
+# Pickle files
+*.pkl
+*.pickle
+
+# Large data files
+*.csv
+*.parquet
+*.feather
+data/
+
+# macOS
+.AppleDouble
+.LSOverride
+Icon?
+
+# Windows
+desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.nfs*
