@@ -9,10 +9,8 @@ env/
 .venv/
 .env/
 
-# Model files (large binary files) - upload separately to VM
-*.pt
-*.h5
-*.keras
+# Model files - tracked with Git LFS (*.pt, *.h5, *.keras)
+# Other large model formats not tracked
 *.onnx
 *.pb
 *.tflite
